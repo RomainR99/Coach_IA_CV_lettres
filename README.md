@@ -2,6 +2,8 @@
 
 Application web qui vous aide à préparer vos candidatures : génération de lettres de motivation personnalisées à partir de votre CV et recommandations pour améliorer votre CV.
 
+**Application en ligne :** [https://coachiacvlettres-supkddtyk6rjif6ehmwnkz.streamlit.app/](https://coachiacvlettres-supkddtyk6rjif6ehmwnkz.streamlit.app/)
+
 ## Fonctionnalités
 
 - **Import du CV** : glisser-déposer un CV au format PDF ou DOCX
