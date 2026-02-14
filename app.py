@@ -100,19 +100,27 @@ if generate_btn:
             st.error(f"Erreur : {e}")
             st.stop()
 
-# Affichage de la lettre + recommandations + export
+# Affichage de la lettre (éditable) + recommandations + export
 if st.session_state.get("letter_generated") and st.session_state.get("letter"):
-    letter = st.session_state["letter"]
+    current_letter = st.session_state["letter"]
     st.subheader("Lettre de motivation générée")
-    st.text_area("", value=letter, height=320, disabled=True, label_visibility="collapsed")
+    st.caption("Vous pouvez modifier le texte ci-dessous avant d'exporter.")
+    edited_letter = st.text_area(
+        "Contenu de la lettre",
+        value=current_letter,
+        height=320,
+        key="letter_edit",
+        label_visibility="collapsed",
+    )
+    st.session_state["letter"] = edited_letter  # conserve les modifications
 
     if st.session_state.get("recommendations"):
         with st.expander("Recommandations d'amélioration du CV", expanded=True):
             st.markdown(st.session_state["recommendations"])
 
     st.subheader("Exporter")
-    pdf_bytes = export_to_pdf(letter)
-    docx_bytes = export_to_docx(letter)
+    pdf_bytes = export_to_pdf(edited_letter)
+    docx_bytes = export_to_docx(edited_letter)
     c1, c2 = st.columns(2)
     with c1:
         st.download_button(
