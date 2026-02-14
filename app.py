@@ -110,7 +110,6 @@ if st.session_state.get("letter_generated") and st.session_state.get("letter"):
     st.caption("Vous pouvez modifier le texte ci-dessous avant d'exporter.")
     st.text_area(
         "Contenu de la lettre",
-        value=st.session_state["letter_edit"],
         height=320,
         key="letter_edit",
         label_visibility="collapsed",
