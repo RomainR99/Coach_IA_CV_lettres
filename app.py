@@ -91,6 +91,7 @@ if generate_btn:
             letter = generate_letter(cv_text, context.strip(), language=lang)
             recommendations = get_cv_recommendations(cv_text, language=lang)
             st.session_state["letter"] = letter
+            st.session_state["letter_edit"] = letter  # même contenu que le widget
             st.session_state["recommendations"] = recommendations
             st.session_state["letter_generated"] = True
         except ValueError as e:
@@ -102,25 +103,28 @@ if generate_btn:
 
 # Affichage de la lettre (éditable) + recommandations + export
 if st.session_state.get("letter_generated") and st.session_state.get("letter"):
-    current_letter = st.session_state["letter"]
+    # Initialiser letter_edit si absent (ancienne session)
+    if "letter_edit" not in st.session_state:
+        st.session_state["letter_edit"] = st.session_state["letter"]
     st.subheader("Lettre de motivation générée")
     st.caption("Vous pouvez modifier le texte ci-dessous avant d'exporter.")
-    edited_letter = st.text_area(
+    st.text_area(
         "Contenu de la lettre",
-        value=current_letter,
+        value=st.session_state["letter_edit"],
         height=320,
         key="letter_edit",
         label_visibility="collapsed",
     )
-    st.session_state["letter"] = edited_letter  # conserve les modifications
+    # Utiliser la valeur du widget (mise à jour par Streamlit) pour l'export
+    letter_to_export = st.session_state["letter_edit"]
 
     if st.session_state.get("recommendations"):
         with st.expander("Recommandations d'amélioration du CV", expanded=True):
             st.markdown(st.session_state["recommendations"])
 
     st.subheader("Exporter")
-    pdf_bytes = export_to_pdf(edited_letter)
-    docx_bytes = export_to_docx(edited_letter)
+    pdf_bytes = export_to_pdf(letter_to_export)
+    docx_bytes = export_to_docx(letter_to_export)
     c1, c2 = st.columns(2)
     with c1:
         st.download_button(
