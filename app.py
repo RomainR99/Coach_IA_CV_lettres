@@ -91,7 +91,6 @@ if generate_btn:
             letter = generate_letter(cv_text, context.strip(), language=lang)
             recommendations = get_cv_recommendations(cv_text, language=lang)
             st.session_state["letter"] = letter
-            st.session_state["letter_edit"] = letter  # même contenu que le widget
             st.session_state["recommendations"] = recommendations
             st.session_state["letter_generated"] = True
         except ValueError as e:
@@ -103,19 +102,23 @@ if generate_btn:
 
 # Affichage de la lettre (éditable) + recommandations + export
 if st.session_state.get("letter_generated") and st.session_state.get("letter"):
-    # Initialiser letter_edit si absent (ancienne session)
-    if "letter_edit" not in st.session_state:
-        st.session_state["letter_edit"] = st.session_state["letter"]
     st.subheader("Lettre de motivation générée")
-    st.caption("Vous pouvez modifier le texte ci-dessous avant d'exporter.")
-    st.text_area(
-        "Contenu de la lettre",
-        height=320,
-        key="letter_edit",
-        label_visibility="collapsed",
-    )
-    # Utiliser la valeur du widget (mise à jour par Streamlit) pour l'export
-    letter_to_export = st.session_state["letter_edit"]
+    st.caption("Modifiez le texte ci-dessous, puis cliquez sur « Enregistrer » avant d'exporter.")
+    # Formulaire : la valeur n'est lue qu'à l'envoi, ce qui garantit que l'export utilise la bonne version
+    with st.form("letter_form"):
+        edited_letter = st.text_area(
+            "Contenu de la lettre",
+            value=st.session_state["letter"],
+            height=320,
+            label_visibility="collapsed",
+        )
+        col_save, _ = st.columns([1, 3])
+        with col_save:
+            saved = st.form_submit_button("Enregistrer les modifications")
+    if saved:
+        st.session_state["letter"] = edited_letter
+        st.success("Modifications enregistrées. Vous pouvez maintenant exporter en PDF ou DOCX.")
+    letter_to_export = st.session_state["letter"]
 
     if st.session_state.get("recommendations"):
         with st.expander("Recommandations d'amélioration du CV", expanded=True):
